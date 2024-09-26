@@ -26,6 +26,31 @@ return {
   },
   config = function()
     local dap = require 'dap'
+
+    require('dap').adapters['pwa-node'] = {
+      type = 'server',
+      host = 'localhost',
+      port = '${port}',
+      executable = {
+        command = 'node',
+        -- 💀 Make sure to update this path to point to your installation
+        args = { '/Users/fahim/.local/share/nvim/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js', '${port}' },
+      },
+    }
+
+    for _, language in ipairs { 'typescript', 'javascript' } do
+      require('dap').configurations[language] = {
+        {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Launch file',
+          program = '${file}',
+          cwd = '${workspaceFolder}',
+          runtimeExecutable = 'node',
+        },
+      }
+    end
+
     local dapui = require 'dapui'
 
     require('mason-nvim-dap').setup {
@@ -41,7 +66,9 @@ return {
       -- online, please don't ask me how to install them :)
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
+        -- 'delve',
+        'codelldb',
+        'js-debug-adapter',
       },
     }
 
